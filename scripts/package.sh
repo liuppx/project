@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-project_name="${PROJECT_NAME:-yeying}"
+project_name="${PROJECT_NAME:-project}"
 output_dir="${OUTPUT_DIR:-$root_dir/output}"
 version="${1:-$(node -p "require('$root_dir/package.json').version")}"
 version="${version#v}"
