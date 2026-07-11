@@ -84,12 +84,40 @@ class OpenPgpService
 
     protected function withHome(callable $callback): mixed
     {
-        $home = sys_get_temp_dir() . '/yeying-gpg-' . bin2hex(random_bytes(12));
+        // macOS limits Unix socket paths; keep the isolated home deliberately short.
+        $home = '/tmp/ygpg-' . bin2hex(random_bytes(6));
         mkdir($home, 0700, true);
+        file_put_contents($home . '/gpg-agent.conf', "allow-loopback-pinentry\n");
+        $this->startAgent($home);
         try {
             return $callback($home);
         } finally {
+            $this->stopAgent($home);
             $this->removeDirectory($home);
+        }
+    }
+
+    protected function startAgent(string $home): void
+    {
+        $agent = $this->binary === 'gpg' ? 'gpg-agent' : dirname($this->binary) . '/gpg-agent';
+        $process = new Process([$agent, '--homedir', $home, '--daemon', '--allow-loopback-pinentry']);
+        $process->setTimeout(10);
+        try {
+            $process->mustRun();
+        } catch (Throwable $e) {
+            throw new ApiException('PGP agent 启动失败：' . trim($process->getErrorOutput() ?: $e->getMessage()));
+        }
+    }
+
+    protected function stopAgent(string $home): void
+    {
+        $gpgconf = $this->binary === 'gpg' ? 'gpgconf' : dirname($this->binary) . '/gpgconf';
+        $process = new Process([$gpgconf, '--homedir', $home, '--kill', 'gpg-agent']);
+        $process->setTimeout(10);
+        try {
+            $process->run();
+        } catch (Throwable) {
+            // Temporary agent cleanup must not hide the original operation result.
         }
     }
 
