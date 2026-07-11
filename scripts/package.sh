@@ -2,7 +2,7 @@
 set -euo pipefail
 
 root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-project_name="${PROJECT_NAME:-yeying}"
+project_name="${PROJECT_NAME:-project}"
 output_dir="${OUTPUT_DIR:-$root_dir/output}"
 version="${1:-$(node -p "require('$root_dir/package.json').version")}"
 version="${version#v}"
@@ -17,7 +17,7 @@ command -v composer >/dev/null || { echo "Missing composer command in PATH" >&2;
 
 cd "$root_dir"
 echo "Installing frontend dependencies..."
-npm ci
+npm install
 echo "Building frontend static assets..."
 npm run build
 echo "Installing production PHP dependencies..."
