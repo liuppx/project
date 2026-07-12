@@ -7,10 +7,19 @@ pid_dir="${YEYING_RUN_DIR:-$root_dir/run}"
 log_dir="${YEYING_LOG_DIR:-$root_dir/storage/logs}"
 pid_file="$pid_dir/yeying.pid"
 port="${LARAVELS_LISTEN_PORT:-2222}"
+health_url="${YEYING_HEALTH_URL:-http://127.0.0.1:${port}/}"
 
 ensure_dirs() {
   mkdir -p "$pid_dir" "$log_dir" "$root_dir/bootstrap/cache" "$root_dir/storage/framework/cache"
   touch "$log_dir/starter.log"
+}
+
+check_runtime() {
+  command -v curl >/dev/null 2>&1 || { echo "curl is required for health checks." >&2; exit 1; }
+  command -v php >/dev/null 2>&1 || { echo "PHP is required." >&2; exit 1; }
+  php -m | grep -qi '^swoole$' || { echo "PHP Swoole extension is required." >&2; exit 1; }
+  [[ -f "$root_dir/vendor/autoload.php" ]] || { echo "Missing vendor/autoload.php. Run scripts/install.sh first." >&2; exit 1; }
+  php -r 'exit((int) !extension_loaded("swoole"));' || { echo "PHP Swoole extension is required." >&2; exit 1; }
 }
 
 is_running() {
@@ -22,6 +31,7 @@ is_running() {
 
 start() {
   ensure_dirs
+  check_runtime
   if is_running; then
     echo "YeYing already running (pid $(cat "$pid_file"), port $port)."
     return 0
@@ -33,7 +43,20 @@ start() {
   cd "$root_dir"
   nohup php "$root_dir/bin/laravels" start >>"$log_dir/starter.log" 2>&1 &
   echo $! > "$pid_file"
-  echo "YeYing started (pid $(cat "$pid_file"), port $port)."
+  for _ in {1..30}; do
+    if curl -fsS "$health_url" >/dev/null 2>&1; then
+      echo "YeYing started (pid $(cat "$pid_file"), port $port)."
+      return 0
+    fi
+    if ! is_running; then
+      echo "YeYing failed to start. See $log_dir/starter.log." >&2
+      rm -f "$pid_file"
+      exit 1
+    fi
+    sleep 1
+  done
+  echo "YeYing did not become healthy at $health_url. See $log_dir/starter.log." >&2
+  exit 1
 }
 
 stop() {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7517cfb49334c0e65ab27f02d288e9c9",
+    "content-hash": "2392eed88f40960d8cd0dfb247c3a44c",
     "packages": [
         {
             "name": "brick/math",
@@ -1546,6 +1546,102 @@
                 "source": "https://github.com/hedeqiang/UMeng-Push/tree/v2.1.6"
             },
             "time": "2022-09-28T08:52:46+00:00"
+        },
+        {
+            "name": "hhxsv5/laravel-s",
+            "version": "v3.8.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/hhxsv5/laravel-s.git",
+                "reference": "e488db0dd1f0abfff58b765b639d9eed93e90ecf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/hhxsv5/laravel-s/zipball/e488db0dd1f0abfff58b765b639d9eed93e90ecf",
+                "reference": "e488db0dd1f0abfff58b765b639d9eed93e90ecf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "ext-pcntl": "*",
+                "php": ">=8.2",
+                "swoole/ide-helper": "@dev",
+                "symfony/console": ">=6.4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=4.8.36"
+            },
+            "suggest": {
+                "ext-inotify": "Inotify, used to real-time reload.",
+                "ext-swoole": "Coroutine-based concurrency library for PHP, require >= 1.7.19."
+            },
+            "bin": [
+                "bin/fswatch"
+            ],
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Hhxsv5\\LaravelS\\Illuminate\\LaravelSServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Hhxsv5\\LaravelS\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Xie Biao",
+                    "email": "hhxsv5@sina.com"
+                }
+            ],
+            "description": "🚀 LaravelS is an out-of-the-box adapter between Laravel/Lumen and Swoole.",
+            "homepage": "https://github.com/hhxsv5/laravel-s",
+            "keywords": [
+                "LaravelS",
+                "async",
+                "coroutine",
+                "http",
+                "inotify",
+                "laravel",
+                "laravel-s",
+                "lumen",
+                "performance",
+                "process",
+                "server",
+                "swoole",
+                "task",
+                "tcp",
+                "timer",
+                "udp",
+                "websocket"
+            ],
+            "support": {
+                "issues": "https://github.com/hhxsv5/laravel-s/issues",
+                "source": "https://github.com/hhxsv5/laravel-s"
+            },
+            "funding": [
+                {
+                    "url": "https://gitee.com/hhxsv5/laravel-s?donate=true",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.blockchain.com/btc/address/367HnAzVTAEk8offesDhcsCQswnugsE54u",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.paypal.me/hhxsv5",
+                    "type": "custom"
+                }
+            ],
+            "time": "2026-01-17T09:14:03+00:00"
         },
         {
             "name": "intervention/gif",
@@ -5573,6 +5669,38 @@
             "time": "2026-04-17T11:37:58+00:00"
         },
         {
+            "name": "swoole/ide-helper",
+            "version": "6.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swoole/ide-helper.git",
+                "reference": "6f12243dce071714c5febe059578d909698f9a52"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swoole/ide-helper/zipball/6f12243dce071714c5febe059578d909698f9a52",
+                "reference": "6f12243dce071714c5febe059578d909698f9a52",
+                "shasum": ""
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Team Swoole",
+                    "email": "team@swoole.com"
+                }
+            ],
+            "description": "IDE help files for Swoole.",
+            "support": {
+                "issues": "https://github.com/swoole/ide-helper/issues",
+                "source": "https://github.com/swoole/ide-helper/tree/6.0.2"
+            },
+            "time": "2025-03-23T07:31:41+00:00"
+        },
+        {
             "name": "symfony/clock",
             "version": "v8.1.0",
             "source": {
@@ -8788,102 +8916,6 @@
             "time": "2025-04-30T06:54:44+00:00"
         },
         {
-            "name": "hhxsv5/laravel-s",
-            "version": "v3.8.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/hhxsv5/laravel-s.git",
-                "reference": "e488db0dd1f0abfff58b765b639d9eed93e90ecf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/hhxsv5/laravel-s/zipball/e488db0dd1f0abfff58b765b639d9eed93e90ecf",
-                "reference": "e488db0dd1f0abfff58b765b639d9eed93e90ecf",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "ext-pcntl": "*",
-                "php": ">=8.2",
-                "swoole/ide-helper": "@dev",
-                "symfony/console": ">=6.4.0"
-            },
-            "require-dev": {
-                "phpunit/phpunit": ">=4.8.36"
-            },
-            "suggest": {
-                "ext-inotify": "Inotify, used to real-time reload.",
-                "ext-swoole": "Coroutine-based concurrency library for PHP, require >= 1.7.19."
-            },
-            "bin": [
-                "bin/fswatch"
-            ],
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Hhxsv5\\LaravelS\\Illuminate\\LaravelSServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Hhxsv5\\LaravelS\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Xie Biao",
-                    "email": "hhxsv5@sina.com"
-                }
-            ],
-            "description": "🚀 LaravelS is an out-of-the-box adapter between Laravel/Lumen and Swoole.",
-            "homepage": "https://github.com/hhxsv5/laravel-s",
-            "keywords": [
-                "LaravelS",
-                "async",
-                "coroutine",
-                "http",
-                "inotify",
-                "laravel",
-                "laravel-s",
-                "lumen",
-                "performance",
-                "process",
-                "server",
-                "swoole",
-                "task",
-                "tcp",
-                "timer",
-                "udp",
-                "websocket"
-            ],
-            "support": {
-                "issues": "https://github.com/hhxsv5/laravel-s/issues",
-                "source": "https://github.com/hhxsv5/laravel-s"
-            },
-            "funding": [
-                {
-                    "url": "https://gitee.com/hhxsv5/laravel-s?donate=true",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://www.blockchain.com/btc/address/367HnAzVTAEk8offesDhcsCQswnugsE54u",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://www.paypal.me/hhxsv5",
-                    "type": "custom"
-                }
-            ],
-            "time": "2026-01-17T09:14:03+00:00"
-        },
-        {
             "name": "iamcal/sql-parser",
             "version": "v0.7",
             "source": {
@@ -11007,38 +11039,6 @@
                 }
             ],
             "time": "2024-10-20T05:08:20+00:00"
-        },
-        {
-            "name": "swoole/ide-helper",
-            "version": "6.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/swoole/ide-helper.git",
-                "reference": "6f12243dce071714c5febe059578d909698f9a52"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/swoole/ide-helper/zipball/6f12243dce071714c5febe059578d909698f9a52",
-                "reference": "6f12243dce071714c5febe059578d909698f9a52",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "authors": [
-                {
-                    "name": "Team Swoole",
-                    "email": "team@swoole.com"
-                }
-            ],
-            "description": "IDE help files for Swoole.",
-            "support": {
-                "issues": "https://github.com/swoole/ide-helper/issues",
-                "source": "https://github.com/swoole/ide-helper/tree/6.0.2"
-            },
-            "time": "2025-03-23T07:31:41+00:00"
         },
         {
             "name": "theseer/tokenizer",
