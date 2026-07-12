@@ -35,6 +35,6 @@ rsync -a \
   --exclude '.env' \
   "$root_dir/" "$stage_dir/"
 
-chmod +x "$stage_dir/scripts/starter.sh" "$stage_dir/scripts/install.sh"
+chmod +x "$stage_dir/scripts/ubuntu-deps.sh" "$stage_dir/scripts/starter.sh" "$stage_dir/scripts/install.sh"
 tar -czf "$archive_path" -C "$stage_dir" .
 echo "Package created: $archive_path"
