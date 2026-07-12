@@ -25,6 +25,7 @@
         "guzzlehttp/guzzle": "^7.3.0",
         "hedeqiang/umeng": "^2.1",
         "laravel/framework": "^13.0",
+        "hhxsv5/laravel-s": "~3.8.0",
         "laravel/tinker": "^3.0",
         "laravolt/avatar": "^6.5",
         "league/commonmark": "^2.5",
@@ -45,7 +46,6 @@
     "require-dev": {
         "barryvdh/laravel-ide-helper": "^3.7",
         "fakerphp/faker": "^1.24",
-        "hhxsv5/laravel-s": "~3.8.0",
         "kitloong/laravel-migrations-generator": "^7.4",
         "larastan/larastan": "^3.10",
         "mockery/mockery": "^1.6",
