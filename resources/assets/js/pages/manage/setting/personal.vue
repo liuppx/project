@@ -14,8 +14,13 @@
                 <Input v-model="userInfo.email" disabled></Input>
             </FormItem>
             <FormItem :label="$L('夜莺钱包')">
-                <Button type="primary" :loading="walletLoading" @click="bindWallet">{{$L('绑定夜莺钱包')}}</Button>
-                <span class="form-tip">{{$L('绑定后可使用钱包登录 YeYing')}}</span>
+                <Input v-if="walletAddress" :value="walletAddress" disabled>
+                    <span slot="prepend">{{$L('钱包地址')}}</span>
+                </Input>
+                <template v-else>
+                    <Button type="primary" :loading="walletLoading" @click="bindWallet">{{$L('绑定夜莺钱包')}}</Button>
+                    <span class="form-tip">{{$L('绑定后可使用钱包登录 YeYing')}}</span>
+                </template>
             </FormItem>
             <FormItem :label="$L('电话')" prop="tel">
                 <Input v-model="formData.tel" :maxlength="20" :placeholder="$L('请输入联系电话')"></Input>
@@ -126,11 +131,13 @@ export default {
             personalTags: [],
             personalTagTotal: 0,
             walletLoading: false,
+            walletAddress: '',
         }
     },
     mounted() {
         this.initData();
         this.loadUserExtra();
+        this.loadWallet();
     },
     computed: {
         ...mapState(['userInfo', 'formOptions']),
@@ -143,9 +150,24 @@ export default {
         userInfo() {
             this.initData();
             this.loadUserExtra();
+            this.loadWallet();
         }
     },
     methods: {
+        loadWallet() {
+            if (!this.userInfo?.userid) {
+                this.walletAddress = '';
+                return;
+            }
+            this.$store.dispatch('call', {url: 'public/auth/info'})
+                .then(({data}) => {
+                    this.walletAddress = data?.address || '';
+                })
+                .catch(() => {
+                    this.walletAddress = '';
+                });
+        },
+
         initData() {
             const extra = this.extraInfo || {};
             this.$set(this.formData, 'userimg', $A.strExists(this.userInfo.userimg, '/avatar') ? '' : this.userInfo.userimg);
@@ -223,6 +245,7 @@ export default {
                     data: {address, chain_id: '1', signature},
                 });
                 $A.messageSuccess('夜莺钱包绑定成功');
+                this.walletAddress = address;
             } catch (error) {
                 $A.modalError(error?.message || '钱包绑定失败');
             } finally {

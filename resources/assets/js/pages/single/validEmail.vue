@@ -11,7 +11,7 @@
                 <div>{{errorText}}</div>
             </div>
             <div slot="footer" v-if="success">
-                <Button type="primary" @click="userLogout" long>{{$L('返回首页')}}</Button>
+                <Button type="primary" @click="enterWorkspace" long>{{$L('进入工作台')}}</Button>
             </div>
         </div>
     </div>
@@ -51,6 +51,7 @@ export default {
         return {
             success: false,
             error: false,
+            userInfo: null,
             errorText: this.$L('链接已过期，已重新发送'),
         }
     },
@@ -64,9 +65,10 @@ export default {
                 data: {
                     code: this.$route.query.code
                 }
-            }).then(() => {
+            }).then(({data}) => {
                 this.success = true;
                 this.error = false;
+                this.userInfo = data;
             }).catch(({data, msg}) => {
                 if (data.code === 2) {
                     this.goForward({name: 'index', query: {action: 'index'}}, true);
@@ -77,8 +79,14 @@ export default {
                 }
             });
         },
-        userLogout() {
-            this.$store.dispatch("logout", false)
+        enterWorkspace() {
+            if (!this.userInfo?.token) {
+                this.goForward({name: 'login'}, true);
+                return;
+            }
+            this.$store.dispatch('handleClearCache', this.userInfo).then(() => {
+                this.goForward({name: 'index', query: {action: 'index'}}, true);
+            });
         }
     },
 }

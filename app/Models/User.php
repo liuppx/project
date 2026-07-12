@@ -12,6 +12,7 @@ use App\Services\RequestContext;
 use App\Tasks\ManticoreSyncTask;
 use Cache;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 /**
  * App\Models\User
@@ -749,6 +750,14 @@ class User extends AbstractModel
         if (!$user) {
             $token = Base::token();
             if ($token) {
+                Log::warning('Token authentication failed', [
+                    'token_hash' => substr(hash('sha256', $token), 0, 16),
+                    'userid' => Doo::userId(),
+                    'email' => Doo::userEmail(),
+                    'expired' => Doo::userExpired(),
+                    'device_exists' => UserDevice::check() !== null,
+                    'request_id' => RequestContext::getCurrentRequestId(),
+                ]);
                 UserDevice::forget($token);
                 throw new ApiException('身份已失效,请重新登录', [], -1);
             } else {
@@ -848,12 +857,10 @@ class User extends AbstractModel
      */
     public static function generateTokenNoDevice($userinfo, $ttl)
     {
-        $key = 'user_token_no_device_' . $userinfo->userid;
-        return Cache::remember($key, $ttl, function () use ($userinfo, $ttl) {
-            $token = Doo::tokenEncode($userinfo->userid, $userinfo->email, $userinfo->encrypt);
-            Cache::put(UserDevice::ck(md5($token)), $userinfo->userid, $ttl);
-            return $token;
-        });
+        Cache::forget('user_token_no_device_' . $userinfo->userid);
+        $token = Doo::tokenEncode($userinfo->userid, $userinfo->email, $userinfo->encrypt);
+        Cache::put(UserDevice::ck(md5($token)), $userinfo->userid, $ttl);
+        return $token;
     }
 
     /**

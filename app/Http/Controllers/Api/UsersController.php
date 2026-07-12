@@ -1496,11 +1496,15 @@ class UsersController extends AbstractController
         UserEmailVerification::whereCode($data['code'])->update([
             'status' => 1
         ]);
-        User::whereUserid($res->userid)->update([
-            'email_verity' => 1
-        ]);
+        $user = User::whereUserid($res->userid)->first();
+        if (!$user || $user->disable_at) {
+            return Base::retError('邮箱绑定的账号不可用');
+        }
+        $user->email_verity = 1;
+        $user->save();
+        User::generateToken($user, true);
 
-        return Base::retSuccess('绑定邮箱成功');
+        return Base::retSuccess('绑定邮箱成功', $user);
     }
 
     /**

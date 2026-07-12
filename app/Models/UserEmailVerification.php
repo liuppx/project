@@ -53,10 +53,15 @@ class UserEmailVerification extends AbstractModel
     public static function userEmailSend(User $user, $type = 1, $email = null)
     {
         $email = $type == 1 ? $user->email : $email;
-        $res = self::whereEmail($email)->where('created_at', '>', Carbon::now()->subMinutes(30))->whereType($type)->first();
-        if ($res && $type == 1) return;
-        //删除
-        self::whereUserid($email)->delete();
+        $recent = self::whereEmail($email)
+            ->where('created_at', '>', Carbon::now()->subMinutes(5))
+            ->whereType($type)
+            ->first();
+        if ($recent) {
+            return;
+        }
+        // 删除旧验证码，再创建本次发送记录。
+        self::whereEmail($email)->delete();
         $code = $type == 1 ? Base::generatePassword(64) : rand(100000, 999999);
         $row = self::createInstance([
             'userid' => $user->userid,
@@ -98,13 +103,18 @@ class UserEmailVerification extends AbstractModel
                     );
                     break;
             }
-            $mailer = new Mailer(Transport::fromDsn("smtp://{$setting['account']}:{$setting['password']}@{$setting['smtp_server']}:{$setting['port']}?verify_peer=0"));
+            $scheme = intval($setting['port']) === 465 ? 'smtps' : 'smtp';
+            $dsn = sprintf('%s://%s:%s@%s:%s?verify_peer=0', $scheme,
+                rawurlencode($setting['account']), rawurlencode($setting['password']),
+                $setting['smtp_server'], $setting['port']);
+            $mailer = new Mailer(Transport::fromDsn($dsn));
             $mailer->send((new Email())
                 ->from($alias . " <{$setting['account']}>")
                 ->to($email)
                 ->subject($subject)
                 ->html($content));
         } catch (\Throwable $e) {
+            $row->delete();
             if (stripos($e->getMessage(), "timed out") !== false) {
                 throw new ApiException("邮件发送超时，请检查邮箱配置是否正确");
             } elseif ($e->getCode() === 550) {

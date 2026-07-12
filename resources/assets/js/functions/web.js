@@ -987,10 +987,13 @@ import {convertLocalResourcePath} from "../components/Replace/utils";
         },
 
         modalWarning(config, millisecond = 0) {
-            if (config === false) {
+            if (config === false || config === null || typeof config === 'undefined') {
                 return;
             }
-            if ($A.isJson(config) && config.content === false) {
+            if (typeof config === 'string' && !config.trim()) {
+                return;
+            }
+            if ($A.isJson(config) && typeof config.render === 'undefined' && !config.content) {
                 return;
             }
             if (millisecond > 0) {
@@ -1002,10 +1005,13 @@ import {convertLocalResourcePath} from "../components/Replace/utils";
         },
 
         modalError(config, millisecond = 0) {
-            if (config === false) {
+            if (config === false || config === null || typeof config === 'undefined') {
                 return;
             }
-            if ($A.isJson(config) && config.content === false) {
+            if (typeof config === 'string' && !config.trim()) {
+                return;
+            }
+            if ($A.isJson(config) && typeof config.render === 'undefined' && !config.content) {
                 return;
             }
             if (millisecond > 0) {
