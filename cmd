@@ -1018,7 +1018,21 @@ case "$1" in
         ;;
     "repassword")
         shift 1
-        container_exec mysql "sh /etc/mysql/repassword.sh $@"
+        if [ "$(env_get APP_RUNTIME)" = "local" ]; then
+            local_mysql_container="project-local-mysql"
+            if ! docker inspect "$local_mysql_container" >/dev/null 2>&1; then
+                error "没有找到本地 mysql 容器!"
+                exit 1
+            fi
+            docker exec \
+                -e MYSQL_PREFIX="$(env_get DB_PREFIX)" \
+                -e MYSQL_USER="$(env_get DB_USERNAME)" \
+                -e MYSQL_PASSWORD="$(env_get DB_PASSWORD)" \
+                -e MYSQL_DATABASE="$(env_get DB_DATABASE)" \
+                "$local_mysql_container" sh /etc/mysql/repassword.sh "$@"
+        else
+            container_exec mysql "sh /etc/mysql/repassword.sh $@"
+        fi
         ;;
     "serve"|"dev")
         shift 1
