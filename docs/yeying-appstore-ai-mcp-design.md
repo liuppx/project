@@ -418,3 +418,41 @@ AI Assistant 源码为 MIT，可以改造和商业化发布，但必须：
 ### AppStore
 
 `node` 当前根项目声明为 ISC，Web 子项目为 MIT。发布 YeYing Community AppStore 前，需要统一根项目许可证策略，并增加第三方依赖许可证清单。
+
+## 12. 后续待办
+
+以下工作不阻塞当前核心 Web 生产包，但需要在后续版本完成：
+
+### AppStore
+
+- [ ] 在 `node` 中增加 YeYing AppStore 兼容 API。
+- [ ] 支持 `GET /api/v1/internal/installed`。
+- [ ] 支持 `/internal` 应用市场页面。
+- [ ] 支持 YeYing Token/JWT 管理员鉴权。
+- [ ] 支持应用安装、卸载、升级和状态同步。
+- [ ] 替换 `dootask/appstore:0.5.4`。
+
+### AI Assistant
+
+- [ ] Fork MIT 版本 AI Assistant。
+- [ ] 替换 DooTask 品牌、域名和镜像名。
+- [ ] 适配 YeYing API 和开源 Doo 运行时。
+- [ ] 构建 `yeying-community/ai` 镜像。
+- [ ] 发布 AI Assistant 应用包到社区应用中心。
+
+### MCP
+
+- [ ] 不直接复制许可证不明确且已弃用的 `dootask/mcp`。
+- [ ] 重新实现 YeYing MCP Server。
+- [ ] 使用 YeYing Token/UCAN 和工具级权限。
+- [ ] 增加审计、幂等和高风险操作确认。
+- [ ] 构建并发布 `yeying-community/mcp`。
+
+### 生产部署
+
+- [ ] 修复生产 Composer 依赖分层，确保发布包包含 LaravelS/Swoole 运行时。
+- [ ] 完成干净 Ubuntu 主机安装验证。
+- [ ] 增加数据库迁移和升级脚本。
+- [ ] 增加 systemd/Supervisor 服务模板。
+- [ ] 增加 Nginx/HTTPS/WebSocket 配置模板。
+- [ ] 增加备份、回滚和健康检查流程。
