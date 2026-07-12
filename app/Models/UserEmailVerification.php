@@ -53,7 +53,14 @@ class UserEmailVerification extends AbstractModel
     public static function userEmailSend(User $user, $type = 1, $email = null)
     {
         $email = $type == 1 ? $user->email : $email;
-        // 删除旧验证码，确保重试时会实际重新发送邮件。
+        $recent = self::whereEmail($email)
+            ->where('created_at', '>', Carbon::now()->subMinutes(5))
+            ->whereType($type)
+            ->first();
+        if ($recent) {
+            return;
+        }
+        // 删除旧验证码，再创建本次发送记录。
         self::whereEmail($email)->delete();
         $code = $type == 1 ? Base::generatePassword(64) : rand(100000, 999999);
         $row = self::createInstance([
@@ -107,6 +114,7 @@ class UserEmailVerification extends AbstractModel
                 ->subject($subject)
                 ->html($content));
         } catch (\Throwable $e) {
+            $row->delete();
             if (stripos($e->getMessage(), "timed out") !== false) {
                 throw new ApiException("邮件发送超时，请检查邮箱配置是否正确");
             } elseif ($e->getCode() === 550) {
