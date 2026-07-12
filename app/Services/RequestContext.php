@@ -35,6 +35,17 @@ class RequestContext
     }
 
     /**
+     * 为长生命周期 Worker 中的每个 HTTP 请求初始化独立上下文。
+     */
+    public static function begin(Request $request): string
+    {
+        $requestId = self::generateRequestId();
+        $request->attributes->set(self::CONTEXT_KEY, $requestId);
+        self::$context[$requestId] = new ClientContext();
+        return $requestId;
+    }
+
+    /**
      * 获取当前请求ID
      */
     public static function getCurrentRequestId($requestId = null): ?string

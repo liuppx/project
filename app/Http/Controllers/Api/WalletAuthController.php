@@ -125,6 +125,15 @@ class WalletAuthController extends AbstractController
         ]);
     }
 
+    public function info()
+    {
+        $user = User::auth();
+        $wallet = UserWallet::whereUserid($user->userid)
+            ->orderByDesc('id')
+            ->first(['address', 'chain', 'chain_id']);
+        return Base::retSuccess('success', $wallet ?: json_decode('{}'));
+    }
+
     private function issueEmailSetupToken(int $userid): string
     {
         $token = Str::random(64);

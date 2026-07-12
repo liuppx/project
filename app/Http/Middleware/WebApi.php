@@ -21,6 +21,7 @@ class WebApi
      */
     public function handle($request, Closure $next)
     {
+        RequestContext::begin($request);
         // 记录请求信息
         RequestContext::set('start_time', microtime(true));
         RequestContext::set('header_language', $request->header('language'));
