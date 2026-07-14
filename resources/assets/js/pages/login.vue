@@ -170,7 +170,7 @@ import {mapState} from "vuex";
 import {languageList, languageName, setLanguage} from "../language";
 import VueQrcode from "@chenfengyuan/vue-qrcode";
 import emitter from "../store/events";
-import {getProvider, requestAccounts, signMessage} from "@yeying-community/web3-bs";
+import {connectAndGetWalletProfile, getProvider, requestAccounts, signMessage} from "@yeying-community/web3-bs";
 
 export default {
     components: {VueQrcode},
@@ -517,8 +517,19 @@ export default {
             try {
                 const provider = await getProvider({preferYeYing: true, timeoutMs: 3000});
                 if (!provider) throw new Error('未检测到夜莺钱包，请先安装并解锁钱包插件');
-                const accounts = await requestAccounts({provider});
-                const address = accounts[0];
+                let address = '';
+                let walletProfile = {};
+                try {
+                    const profileResult = await connectAndGetWalletProfile({
+                        provider,
+                        fields: ['username', 'email'],
+                    });
+                    address = profileResult.address;
+                    walletProfile = profileResult.profile || {};
+                } catch (_) {
+                    const accounts = await requestAccounts({provider});
+                    address = accounts[0];
+                }
                 if (!address) throw new Error('钱包未返回可用账号');
                 const challengeResponse = await fetch(`${window.location.origin}/api/public/auth/challenge`, {
                     method: 'POST', headers: {'Content-Type': 'application/json'},
@@ -533,7 +544,7 @@ export default {
                 });
                 const verifyPayload = await verifyResponse.json();
                 if (verifyPayload.data?.code === 'wallet_email_required') {
-                    await this.completeWalletEmail(verifyPayload.data.setup_token);
+                    await this.completeWalletEmail(verifyPayload.data.setup_token, walletProfile);
                     return;
                 }
                 if (verifyPayload.ret !== 1 || !verifyPayload.data?.token) throw new Error(verifyPayload.msg || '钱包登录失败');
@@ -558,10 +569,11 @@ export default {
             }
         },
 
-        completeWalletEmail(setupToken) {
+        completeWalletEmail(setupToken, walletProfile = {}) {
             return new Promise((resolve, reject) => {
                 $A.modalInput({
                     title: '首次钱包登录，请设置邮箱',
+                    value: walletProfile.email || '',
                     placeholder: '请输入邮箱地址',
                     onOk: (email) => {
                         email = $A.trim(email || '');
@@ -569,7 +581,11 @@ export default {
                         return fetch(`${window.location.origin}/api/public/auth/email`, {
                             method: 'POST',
                             headers: {'Content-Type': 'application/json'},
-                            body: JSON.stringify({email, setup_token: setupToken}),
+                            body: JSON.stringify({
+                                email,
+                                username: walletProfile.username || '',
+                                setup_token: setupToken,
+                            }),
                         }).then(response => response.json()).then(payload => {
                             if (payload.ret !== 1) throw new Error(payload.msg || '邮箱设置失败');
                             $A.modalWarning('验证邮件已发送，请完成邮箱验证后再使用钱包登录');
