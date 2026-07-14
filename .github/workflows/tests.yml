@@ -49,6 +49,8 @@ jobs:
         env:
           MYSQL_ROOT_PASSWORD: test
           MYSQL_DATABASE: dootask
+          MYSQL_USER: yeying
+          MYSQL_PASSWORD: test
         ports:
           - 3306:3306
         options: >-
@@ -72,6 +74,7 @@ jobs:
               composer install --prefer-dist --no-interaction &&
               cp .env.example .env &&
               sed -i "s/^DB_HOST=.*/DB_HOST=127.0.0.1/" .env &&
+              sed -i "s/^DB_PORT=.*/DB_PORT=3306/" .env &&
               sed -i "s/^DB_DATABASE=.*/DB_DATABASE=dootask/" .env &&
               sed -i "s/^DB_PASSWORD=.*/DB_PASSWORD=test/" .env &&
               sed -i "s/^REDIS_HOST=.*/REDIS_HOST=127.0.0.1/" .env &&
