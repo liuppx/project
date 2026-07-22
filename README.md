@@ -126,30 +126,19 @@ Use Caddy or Nginx in front of LaravelS for HTTPS, WebSocket forwarding, upload 
 ./cmd repassword                 # Reset the first admin user's password
 ./cmd repassword 1               # Reset by user ID
 ./cmd repassword user@example.com # Reset by email
+./cmd ensure-admin               # Create or repair the default admin if none exists
 ./cmd help
 ```
 
 `./cmd repassword` without arguments only targets users whose `identity` contains the `admin` marker. If it prints `错误：未找到管理员用户！`, do not reset an arbitrary first user. Grant administrator identity to the intended account first.
 
-To grant the first administrator after deployment, connect to the configured MySQL database and update the intended user. Replace `users` with `${DB_PREFIX}users` if `DB_PREFIX` is set in `.env`.
-
-```sql
-SELECT userid, email, identity FROM users ORDER BY userid LIMIT 10;
-UPDATE users
-SET identity = CASE
-    WHEN identity IS NULL OR identity = '' THEN ',admin,'
-    WHEN identity LIKE '%,admin,%' THEN identity
-    WHEN RIGHT(identity, 1) = ',' THEN CONCAT(identity, 'admin,')
-    ELSE CONCAT(identity, ',admin,')
-END
-WHERE userid = 1;
-```
-
-Then reset that account's password explicitly:
+`./scripts/install.sh` automatically runs the admin bootstrap after migrations. If you need to repair an existing deployment, run:
 
 ```bash
-./cmd repassword 1
+./cmd ensure-admin
 ```
+
+If an administrator already exists, the command prints it and leaves passwords unchanged. If no administrator exists, it creates or repairs `admin@dootask.com`, prints a one-time initial password, and requires password change on first login.
 
 Back up MySQL, `public/uploads` and production configuration before upgrades. See `docs/` for the deployment, backup and recovery details.
 

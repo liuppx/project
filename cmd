@@ -93,6 +93,7 @@ msg() {
             "终止卸载。") out="Uninstall aborted." ;;
             "卸载完成") out="Uninstall complete" ;;
             "修改成功") out="Changed successfully" ;;
+            "确保管理员账号") out="Ensure administrator account" ;;
         esac
     fi
     # 动态值：依次把 (*) 替换为参数
@@ -591,6 +592,7 @@ Project 管理脚本
   url <地址>                  修改访问地址
   env <键> <值>               设置环境变量
   debug [true|false]          切换调试模式
+  ensure-admin [参数]          确保存在管理员账号
   repassword [用户名]         重置数据库密码
 
 🚀 开发构建:
@@ -627,6 +629,7 @@ Project 管理脚本
   ./cmd install --port 8080   安装并指定端口 8080
   ./cmd update --branch dev   切换到 dev 分支并更新
   ./cmd mysql backup          备份数据库
+  ./cmd ensure-admin          创建或修复默认管理员
   ./cmd artisan migrate       执行数据库迁移
   ./cmd local-install         初始化本机开发环境
 EOF
@@ -646,6 +649,7 @@ Usage: ./cmd <command> [options]
   url <address>               Change access URL
   env <key> <value>           Set environment variable
   debug [true|false]          Toggle debug mode
+  ensure-admin [options]      Ensure an administrator account exists
   repassword [username]       Reset database password
 
 🚀 Build:
@@ -682,6 +686,7 @@ Examples:
   ./cmd install --port 8080   Install on port 8080
   ./cmd update --branch dev   Switch to dev branch and update
   ./cmd mysql backup          Back up database
+  ./cmd ensure-admin          Create or repair the default administrator
   ./cmd artisan migrate       Run database migration
   ./cmd local-install         Prepare local dev mode
 EOF
@@ -976,7 +981,7 @@ if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]] || [[ $#
 fi
 
 # 非宿主机命令需要检查 Docker 环境；repassword 自己处理 mysql/docker fallback。
-if [[ "$1" != "electron" ]] && [[ "$1" != "repassword" ]]; then
+if [[ "$1" != "electron" ]] && [[ "$1" != "repassword" ]] && [[ "$1" != "ensure-admin" ]]; then
     check_docker
     env_init
 fi
@@ -1020,6 +1025,10 @@ case "$1" in
     "repassword")
         shift 1
         exec "${WORK_DIR}/scripts/repassword.sh" "$@"
+        ;;
+    "ensure-admin")
+        shift 1
+        php artisan dootask:ensure-admin "$@"
         ;;
     "serve"|"dev")
         shift 1
