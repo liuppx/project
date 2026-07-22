@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\DB;
 
 class EnsureAdminUser extends Command
 {
-    protected $signature = 'dootask:ensure-admin {--email=admin@dootask.com : 管理员邮箱} {--password= : 指定初始密码，留空则自动生成}';
+    protected $signature = 'dootask:ensure-admin {--email=admin@yeying.com : 管理员邮箱} {--password= : 指定初始密码，留空则自动生成}';
     protected $description = '确保系统至少有一个管理员账号';
 
     public function handle(): int

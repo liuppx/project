@@ -218,7 +218,7 @@ RUNTIME_DRIVER=opensource
 - 创建 Laravel 可写目录
 - 安装生产 Composer 依赖
 - 执行数据库迁移
-- 确保存在默认管理员账号（无管理员时创建/修复 `admin@dootask.com` 并输出初始密码）
+- 确保存在默认管理员账号（无管理员时创建/修复 `admin@yeying.com` 并输出初始密码）
 - 清理配置、路由和视图缓存
 - 修复 `storage` 和 `bootstrap/cache` 权限
 
@@ -269,7 +269,7 @@ sudo ./scripts/ubuntu-deps.sh --install
 
 无参数执行 `./cmd repassword` 时，只会查找 `identity` 包含 `admin` 标记的用户。若提示 `错误：未找到管理员用户！`，不要回退重置任意第一个用户，应先把明确的目标账号授予管理员身份。
 
-部署后需要获得第一个管理账号时，执行下面命令即可；若系统已存在管理员，命令只会输出已有管理员，不修改密码。若没有管理员，命令会创建/修复 `admin@dootask.com`，输出初始密码，并强制首次登录后修改密码。
+部署后需要获得第一个管理账号时，执行下面命令即可；若系统已存在管理员，命令只会输出已有管理员，不修改密码。若没有管理员，命令会创建/修复 `admin@yeying.com`，输出初始密码，并强制首次登录后修改密码。
 
 ```bash
 ./cmd ensure-admin

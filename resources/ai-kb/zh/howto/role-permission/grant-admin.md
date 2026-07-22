@@ -44,7 +44,7 @@ last_verified: v0.0.1
    - `clearadmin`：从 `identity` 数组移除 `'admin'`
 
 ## 第一个管理员
-首次部署执行 `./scripts/install.sh` 后，系统会自动运行管理员初始化。若库里没有任何 `identity` 含 `admin` 的用户，会创建或修复 `admin@dootask.com`，输出一次性初始密码，并设置首次登录必须改密。已有管理员时不会改密码。
+首次部署执行 `./scripts/install.sh` 后，系统会自动运行管理员初始化。若库里没有任何 `identity` 含 `admin` 的用户，会创建或修复 `admin@yeying.com`，输出一次性初始密码，并设置首次登录必须改密。已有管理员时不会改密码。
 
 如果旧部署已经没有管理员，服务器项目目录执行 `./cmd ensure-admin`。不要把 `./cmd repassword` 改成回退第一个用户；`repassword` 只负责重置已有管理员或显式指定的用户。
 
