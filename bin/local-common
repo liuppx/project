@@ -99,6 +99,23 @@ require_local_env_config() {
     fi
 }
 
+require_local_database_ready() {
+    local status_output=""
+
+    cd "${ROOT_DIR}"
+    if ! status_output="$(php artisan migrate:status --no-interaction 2>&1)"; then
+        echo "Local database is not ready. Run ./cmd local-install after checking .env DB settings." >&2
+        printf '%s\n' "$status_output" >&2
+        exit 1
+    fi
+
+    if printf '%s\n' "$status_output" | grep -qE 'Migration table not found|Pending'; then
+        echo "Local database has not been initialized or has pending migrations." >&2
+        echo "Run ./cmd local-install before ./cmd local-start." >&2
+        exit 1
+    fi
+}
+
 prepare_runtime_dirs() {
     mkdir -p \
         "${ROOT_DIR}/bootstrap/cache" \
