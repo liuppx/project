@@ -11,7 +11,7 @@
 
 ## 本地开发
 
-本地开发模式下，PHP/LaravelS 在宿主机运行，MySQL、Redis、Manticore 等中间件通过 Docker 容器运行。Node.js/npm 只用于前端开发和构建，不参与 PHP 服务运行。
+本地开发模式下，PHP/LaravelS 在宿主机运行。MySQL、Redis、Manticore、AppStore 等通用中间件由你在项目外统一管理，项目命令不会启动或停止这些容器。Node.js/npm 只用于前端开发和构建，不参与 PHP 服务运行。
 
 ### 环境要求
 
@@ -20,32 +20,39 @@
 - PHP Swoole 扩展
 - Composer
 - Node.js 20+ 和 npm
-- Docker 20.10+、Docker Compose v2+
+- 可从宿主机访问的 MySQL 8.4 和 Redis
+- Manticore、AppStore 按需单独部署
 
 ### 初始化本地环境
 
-在项目根目录执行：
+先准备 `.env` 并确认数据库、Redis 等连接配置指向你已经启动的通用中间件：
+
+```bash
+cp .env.template .env
+```
+
+至少检查这些配置：
+
+```dotenv
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=project
+DB_USERNAME=project
+DB_PASSWORD=123456
+
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_CLIENT=predis
+```
+
+然后在项目根目录执行：
 
 ```bash
 ./cmd local-install
 ```
 
-该命令用于初始化本地 `.env`、PHP 依赖和运行目录，不会把 PHP 服务放进容器。
-
-### 启动本地中间件
-
-```bash
-./cmd local-up
-```
-
-默认使用的本地中间件端口包括：
-
-```text
-MySQL      127.0.0.1:23306
-Redis      127.0.0.1:26379
-Manticore  127.0.0.1:9306
-AppStore   127.0.0.1:19080（如已部署）
-```
+该命令用于初始化本地 `.env`、PHP 依赖、运行目录并执行迁移。它只检查必要配置项是否存在，不会自动修正 `.env`，也不会启动 MySQL、Redis 或其他中间件；如果配置错误或服务未启动，命令会在连接数据库时直接报错。
 
 ### 启动本地 PHP 服务
 
@@ -89,12 +96,6 @@ npm run build
 ```text
 public/js/build/
 public/manifest.json
-```
-
-停止本地中间件：
-
-```bash
-./cmd local-down
 ```
 
 ## 生产部署
@@ -202,7 +203,7 @@ LARAVELS_LISTEN_PORT=2222
 RUNTIME_DRIVER=opensource
 ```
 
-宿主机运行时请将 `DB_HOST`、`DB_PORT`、`REDIS_HOST` 和 `REDIS_PORT` 配置为宿主机可访问的实际地址。模板已经按本地中间件暴露端口填写默认值，生产环境请替换为实际数据库和 Redis 地址。
+宿主机运行时请将 `DB_HOST`、`DB_PORT`、`REDIS_HOST` 和 `REDIS_PORT` 配置为宿主机可访问的实际地址。项目不会代为启动 MySQL、Redis 或其他通用中间件。
 
 不要把生产 `.env` 提交到 Git。生产 SMTP 邮箱在管理员后台的系统邮箱设置中配置，不写入 README 或源码。
 

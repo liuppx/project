@@ -599,17 +599,12 @@ Project 管理脚本
   serve, dev                  启动开发模式
   build, prod                 生产环境构建
   electron                    构建桌面应用
-  local-install               初始化本机开发环境（应用本机运行，中间件走容器）
-  local-up                    启动本机开发依赖容器（MySQL/Redis/AppStore）
-  local-down                  停止本机开发依赖容器
+  local-install               初始化本机开发环境（应用本机运行，中间件需自行配置）
   local-start                 在宿主机启动 LaravelS
   local-stop                  停止宿主机 LaravelS
 
 🔧 服务管理:
-  up [服务名]                 启动容器
-  down [服务名]               停止容器
-  restart [服务名]            重启容器
-  reup                        重新构建并启动
+  up/down/restart/reup        旧容器应用模式已停用
 
 💾 数据库操作:
   mysql backup                备份数据库
@@ -656,17 +651,12 @@ Usage: ./cmd <command> [options]
   serve, dev                  Start dev mode
   build, prod                 Production build
   electron                    Build desktop app
-  local-install               Prepare local dev mode (app on host, middleware in containers)
-  local-up                    Start local dev dependencies (MySQL/Redis/AppStore)
-  local-down                  Stop local dev dependencies
+  local-install               Prepare local dev mode (app on host, middleware configured externally)
   local-start                 Start LaravelS on the host
   local-stop                  Stop LaravelS on the host
 
 🔧 Services:
-  up [service]                Start containers
-  down [service]              Stop containers
-  restart [service]           Restart containers
-  reup                        Rebuild and start
+  up/down/restart/reup        Legacy container app mode is disabled
 
 💾 Database:
   mysql backup                Back up database
@@ -980,8 +970,15 @@ if [[ "$1" == "help" ]] || [[ "$1" == "--help" ]] || [[ "$1" == "-h" ]] || [[ $#
     exit 0
 fi
 
-# 非宿主机命令需要检查 Docker 环境；repassword 自己处理 mysql/docker fallback。
-if [[ "$1" != "electron" ]] && [[ "$1" != "repassword" ]] && [[ "$1" != "ensure-admin" ]]; then
+# 非宿主机命令需要检查 Docker 环境；repassword 自己处理 mysql/docker fallback，本机直跑命令不需要 Docker。
+if [[ "$1" != "electron" ]] \
+    && [[ "$1" != "repassword" ]] \
+    && [[ "$1" != "ensure-admin" ]] \
+    && [[ "$1" != "local-install" ]] \
+    && [[ "$1" != "local-up" ]] \
+    && [[ "$1" != "local-down" ]] \
+    && [[ "$1" != "local-start" ]] \
+    && [[ "$1" != "local-stop" ]]; then
     check_docker
     env_init
 fi
@@ -1135,20 +1132,20 @@ case "$1" in
         container_exec php "php artisan ide-helper:models -W"
         ;;
     "restart")
-        error "./cmd restart 已停用。生产应用请使用 scripts/starter.sh restart；本地中间件请使用 ./cmd local-up。"
+        error "./cmd restart 已停用。生产应用请使用 scripts/starter.sh restart；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "reup")
-        error "./cmd reup 已停用。生产应用请使用 scripts/package.sh 和 scripts/starter.sh；本地中间件请使用 ./cmd local-up。"
+        error "./cmd reup 已停用。生产应用请使用 scripts/package.sh 和 scripts/starter.sh；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "down")
-        error "./cmd down 已停用。生产应用请使用 scripts/starter.sh stop；本地中间件请使用 ./cmd local-down。"
+        error "./cmd down 已停用。生产应用请使用 scripts/starter.sh stop；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "up")
         shift 1
-        error "./cmd up 仅属于旧容器应用模式，已停用。生产应用请使用 scripts/starter.sh；本地中间件请使用 ./cmd local-up。"
+        error "./cmd up 仅属于旧容器应用模式，已停用。生产应用请使用 scripts/starter.sh；本地中间件请在项目外自行管理。"
         exit 1
         ;;
     "local-install")
