@@ -2,9 +2,6 @@
 
 set -uo pipefail
 
-SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-BACKUP_CONF_FILE="${SCRIPT_DIR}/backup.conf"
-PASSPHRASE_FILE="${SCRIPT_DIR}/.passphrase-file"
 BACKUP_DIR="/opt/backup"
 LOGFILE=""
 
@@ -14,6 +11,8 @@ MODULE_NAME="$DEPLOY_DIR_NAME"
 if [[ "$DEPLOY_DIR_NAME" =~ ^(.+)-v[^-]+-[[:alnum:]]{7}$ ]]; then
     MODULE_NAME="${BASH_REMATCH[1]}"
 fi
+BACKUP_CONF_FILE="/data/${MODULE_NAME}/backup.conf"
+PASSPHRASE_FILE="/data/${MODULE_NAME}/.passphrase-file"
 
 init_log_file() {
     local logfile_name=$1
@@ -102,6 +101,9 @@ mkdir -p "$BACKUP_DIR" || fail "Failed to create backup directory: ${BACKUP_DIR}
 rm -rf "$TMP_DIR" || fail "Failed to remove old temporary directory: ${TMP_DIR}"
 mkdir -p "$TMP_DIR" || fail "Failed to create temporary directory: ${TMP_DIR}"
 cp "${DEPLOY_REAL_PATH}/.env" "$TMP_DIR/.env" || fail "Failed to copy .env into temporary directory"
+if [[ -f "/etc/nginx/conf.d/project.conf" ]]; then
+    cp "/etc/nginx/conf.d/project.conf" "$TMP_DIR/project.conf" || fail "Failed to copy project.conf into temporary directory"
+fi
 
 if tar czf - -C "$(dirname "$TMP_DIR")" "$(basename "$TMP_DIR")" | gpg --batch --yes --symmetric --cipher-algo AES256 --passphrase-file "$PASSPHRASE_FILE" -o "$TMP_OUTPUT"; then
     mv "$TMP_OUTPUT" "$BACKUP_FILE_PATH" || fail "Failed to move backup file to ${BACKUP_FILE_PATH}"
