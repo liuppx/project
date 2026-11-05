@@ -5,8 +5,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/package-common.sh"
 package_common_init project "$@"
 for command_name in npm composer; do command -v "$command_name" >/dev/null 2>&1 || package_fail "$command_name is required"; done
-[[ -f "$PACKAGE_ROOT_DIR/package-lock.json" && -f "$PACKAGE_ROOT_DIR/composer.lock" ]] || package_fail 'package-lock.json and composer.lock are required for deterministic installs'
-(cd "$PACKAGE_ROOT_DIR" && HUSKY=0 npm ci --no-audit --no-fund && npx vite build -- fromcmd)
+[[ -f "$PACKAGE_ROOT_DIR/composer.lock" ]] || package_fail 'composer.lock is required for deterministic PHP dependency installation'
+(cd "$PACKAGE_ROOT_DIR" && HUSKY=0 npm install --no-audit --no-fund && npx vite build -- fromcmd)
 (cd "$PACKAGE_ROOT_DIR" && composer install --no-dev --prefer-dist --optimize-autoloader --no-interaction --no-progress)
 [[ -f "$PACKAGE_ROOT_DIR/public/manifest.json" && -d "$PACKAGE_ROOT_DIR/public/js/build" ]] || package_fail 'frontend build manifest or assets are missing'
 package_make_root project
